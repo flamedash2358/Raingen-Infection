@@ -65,6 +65,9 @@ class Clan:
 
     leader_lives = 0
     clan_cats = []
+    # LG
+    outside_group_cats = []
+    # ---
     starclan_cats = []
     darkforest_cats = []
     unknown_cats = []
@@ -646,6 +649,9 @@ class Clan:
                 self.med_cat_list.remove(cat.ID)
                 self.med_cat_predecessors += 1
 
+            if cat.ID in self.outside_group_cats:
+                self.outside_group_cats.remove(cat.ID)
+
     def add_to_darkforest(self, cat):  # Same as add_cat
         """
         Places the dead cat into the dark forest.
@@ -660,6 +666,9 @@ class Clan:
             if cat.ID in self.med_cat_list:
                 self.med_cat_list.remove(cat.ID)
                 self.med_cat_predecessors += 1
+
+            if cat.ID in self.outside_group_cats:
+                self.outside_group_cats.remove(cat.ID)
             #update_sprite(Cat.all_cats[str(cat)])
             # The dead-value must be set to True before the cat can go to starclan
 
@@ -678,6 +687,9 @@ class Clan:
             if cat.ID in self.med_cat_list:
                 self.med_cat_list.remove(cat.ID)
                 self.med_cat_predecessors += 1
+            
+            if cat.ID in self.outside_group_cats:
+                self.outside_group_cats.remove(cat.ID)
 
     def add_to_clan(self, cat):
         """
@@ -693,6 +705,11 @@ class Clan:
             Cat.outside_cats.pop(cat.ID)
             cat.clan = str(game.clan.name)
 
+            # LG
+            if cat.ID in self.outside_group_cats:
+                self.outside_group_cats.remove(cat.ID)
+
+
     def add_to_outside(self, cat):  # same as add_cat
         """
         Places the gone cat into cotc.
@@ -701,6 +718,27 @@ class Clan:
         if cat.ID in Cat.all_cats and cat.outside and cat.ID not in Cat.outside_cats:
             # The outside-value must be set to True before the cat can go to cotc
             Cat.outside_cats.update({cat.ID: cat})
+    
+    # LG
+    def add_to_outside_group(self, cat):  # cat is a 'Cat' object
+        """LIFEGEN: Adds cat into the list of outside group cats"""
+        cat.outside = True
+        cat.status_change("rogue")
+        self.add_to_outside(cat)
+        if cat.ID in Cat.all_cats and cat.ID not in self.outside_group_cats:
+            self.outside_group_cats.append(cat.ID)
+        if cat.ID in self.clan_cats:
+            self.clan_cats.remove(cat.ID)
+    
+    def remove_from_outside_group(self, cat):
+        cat.outside = False
+        cat.status_change("warrior")
+        self.add_to_clan(cat)
+        if cat.ID in Cat.all_cats:
+            self.clan_cats.append(cat.ID)
+        if cat.ID in self.outside_group_cats:
+            self.outside_group_cats.remove(cat.ID)
+    # ---
 
     def remove_cat(self, ID):  # ID is cat.ID
         """
@@ -722,6 +760,9 @@ class Clan:
             self.unknown_cats.remove(ID)
         if ID in self.darkforest_cats:
             self.darkforest_cats.remove(ID)
+
+        if ID in self.outside_group_cats:
+            self.outside_group_cats.remove(ID)
 
     def __repr__(self):
         if self.name is not None:
@@ -861,6 +902,8 @@ class Clan:
         # LIST OF CLAN CATS
         clan_data["clan_cats"] = ",".join([str(i) for i in self.clan_cats])
 
+        clan_data["outside_group_cats"] = ",".join([str(i) for i in self.outside_group_cats])
+
         clan_data["faded_cats"] = ",".join([str(i) for i in self.faded_ids])
 
         # Patrolled cats
@@ -874,6 +917,8 @@ class Clan:
         clan_data['talks'] = self.talks
         clan_data["disaster"] = self.disaster
         clan_data["disaster_moon"] = self.disaster_moon
+        
+        # LG
         clan_data["focus"] = self.focus
         clan_data["focus_moons"] = self.focus_moons
 
@@ -890,6 +935,7 @@ class Clan:
                     cats.append(c.prefix + "," + c.suffix + ",medicine cat")
                 other_med.append(cats)
             clan_data["other_med"] = other_med
+        # ---
 
         self.save_herbs(game.clan)
         self.save_disaster(game.clan)
@@ -1287,6 +1333,17 @@ class Clan:
             else:
                 print("WARNING: Cat not found:", cat)
                 game.switches["error_message"] = "Error loading ---clan.json. Cat not found:", cat
+        
+        # LG
+        if "outside_group_cats" in clan_data:
+            for cat in clan_data["outside_group_cats"].split(","):
+                if cat in Cat.all_cats:
+                    game.clan.add_outside_group_cat(Cat.all_cats[cat])
+                    print(cat, cat.name, "adding to outside group")
+        else:
+            clan_data["outside_group_cats"] = ""
+        # ---
+
         game.switches["error_message"] = "Error loading ---clan.json. Check War related info"
         if "war" in clan_data:
             game.clan.war = clan_data["war"]

@@ -3719,6 +3719,35 @@ class Cat:
             given_list.sort(key=lambda x: -1 * int(x.dead_for))
 
         return
+    
+    # LG
+    @staticmethod
+    def get_cat_location(cat):
+        clancats = game.clan.clan_cats
+        outside_group_cats = game.clan.outside_group_cats
+
+        if cat.ID in clancats:
+            if cat.dead:
+                if cat.df:
+                    return "df"
+                elif cat.outside:
+                    return "ur"
+                else:
+                    return "sc"
+            else:
+                if cat.outside:
+                    return "outside"
+                else:
+                    return "clan"
+        elif cat.ID in outside_group_cats:
+            if cat.status == "kittypet":
+                return "kittypet"
+            else:
+                return "outside_group"
+        else:
+            print("WARNING:", cat.name, "not in clan_cats or outside_group_cats! Adding to Clan.")
+            game.clan.clan_cats.append(cat.ID)
+            return "clan"
 
     @staticmethod
     def insert_cat(c: Cat):

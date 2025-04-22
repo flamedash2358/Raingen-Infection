@@ -236,6 +236,22 @@ class ProfileScreen(Screens):
 
             if game.switches["window_open"]:
                 pass
+            # LG
+            elif event.ui_element == self.profile_elements["change_location"]:
+                print("----------")
+                print(self.the_cat.name, "PREVIOUS LOCATION:", Cat.get_cat_location(self.the_cat))
+                if Cat.get_cat_location(self.the_cat) == "clan":
+                    game.clan.add_to_outside_group(self.the_cat)
+                else:
+                    game.clan.remove_from_outside_group(self.the_cat)
+                self.clear_profile()
+                self.build_profile()
+                print(self.the_cat.name, "CURRENT LOCATION:", Cat.get_cat_location(self.the_cat))
+                if self.the_cat.ID in game.clan.clan_cats:
+                    print(self.the_cat.name, "in clan_cats")
+                if self.the_cat.ID in game.clan.outside_group_cats:
+                    print(self.the_cat.name, "in outside_group_cats")
+                print("----------")
             elif event.ui_element == self.exile_return_button:
                 game.clan.exile_return = True
                 Cat.return_home(self)
@@ -722,8 +738,13 @@ class ProfileScreen(Screens):
             object_id="@buttonstyles_icon",
         )
         
-        self.exile_return_button = UIImageButton(ui_scale(pygame.Rect((383, 119), (34, 34))), "",
-                                                object_id="#exile_return_button",  tool_tip_text='Ask your Clan for your nest back.', manager=MANAGER)
+        self.exile_return_button = UIImageButton(
+            ui_scale(pygame.Rect((383, 119), (34, 34))),
+            "",
+            object_id="#exile_return_button",
+            tool_tip_text='Ask your Clan for your nest back.',
+            manager=MANAGER
+            )
         
         self.relations_tab_button = UISurfaceImageButton(
             ui_scale(pygame.Rect((48, 420), (176, 30))),
@@ -930,6 +951,24 @@ class ProfileScreen(Screens):
             line_spacing=1,
             manager=MANAGER,
         )
+
+        if Cat.get_cat_location(self.the_cat) == "outside_group":
+            self.profile_elements["change_location"] = UISurfaceImageButton(
+                ui_scale(pygame.Rect((0, 30), (200, 34))),
+                "Add to Clan",
+                get_button_dict(ButtonStyles.ROUNDED_RECT, (200, 34)),
+                object_id="@buttonstyles_rounded_rect",
+                anchors={"centerx": "centerx"}
+            )
+        elif Cat.get_cat_location(self.the_cat) == "clan":
+            self.profile_elements["change_location"] = UISurfaceImageButton(
+                ui_scale(pygame.Rect((0, 30), (200, 34))),
+                "Add to rogue group",
+                get_button_dict(ButtonStyles.ROUNDED_RECT, (200, 34)),
+                object_id="@buttonstyles_rounded_rect",
+                anchors={"centerx": "centerx"}
+            )
+
     
         self.profile_elements["cat_info_column2"] = UITextBoxTweaked(
             self.generate_column2(self.the_cat),

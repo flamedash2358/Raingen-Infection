@@ -131,63 +131,80 @@ class ClanScreen(Screens):
         # We have to convert the positions to something pygame_gui buttons will understand
         # This should be a temp solution. We should change the code that determines positions.
         i = 0
-        for x in game.clan.clan_cats:
-            if (
-                not Cat.all_cats[x].dead
-                and Cat.all_cats[x].in_camp
-                and not Cat.all_cats[x].moons < 0
-                and not (Cat.all_cats[x].exiled or Cat.all_cats[x].outside)
-                and (
-                    Cat.all_cats[x].status != "newborn"
-                    or game.config["fun"]["all_cats_are_newborn"]
-                    or game.config["fun"]["newborns_can_roam"]
-                )
+
+        # LG
+        your_location = Cat.get_cat_location(game.clan.your_cat)
+        cats_to_display = []
+        if your_location == "clan":
+            for x in game.clan.clan_cats:
+                if (
+                    not Cat.all_cats[x].dead
+                    and Cat.all_cats[x].in_camp
+                    and not Cat.all_cats[x].moons < 0
+                    and not (Cat.all_cats[x].exiled or Cat.all_cats[x].outside)
+                    and (
+                        Cat.all_cats[x].status != "newborn"
+                        or game.config["fun"]["all_cats_are_newborn"]
+                        or game.config["fun"]["newborns_can_roam"]
+                    )
             ):
-                i += 1
-                if i > self.max_sprites_displayed:
-                    break
+                    cats_to_display.append(x)
+        elif your_location == "outside":
+            cats_to_display = []
+        elif your_location == "outside_group":
+            cats_to_display = game.clan.outside_group_cats
+        else:
+            cats_to_display = []
 
-                try:
-                    image = Cat.all_cats[x].sprite.convert_alpha()
-                    blend_layer = (
-                        self.game_bgs[self.active_bg]
-                        .subsurface(
-                            ui_scale(
-                                pygame.Rect(tuple(Cat.all_cats[x].placement), (50, 50))
-                            )
-                        )
-                        .convert_alpha()
-                    )
-                    blend_layer = pygame.transform.box_blur(
-                        blend_layer, self.layout["cat_shading"]["blur"]
-                    )
+        print("Your location:", your_location)
+        for x in cats_to_display:
+            print("Displaying", Cat.all_cats[x].name)
+        # ---
+            i += 1
+            if i > self.max_sprites_displayed:
+                break
 
-                    sprite = image.copy()
-                    sprite.fill(
-                        (255, 255, 255, 255), special_flags=pygame.BLEND_RGB_MAX
-                    )
-                    sprite.blit(
-                        blend_layer, (0, 0), special_flags=pygame.BLEND_RGBA_MULT
-                    )
-                    image.set_alpha(self.layout["cat_shading"]["blend_strength"])
-                    sprite.blit(image, (0, 0), special_flags=pygame.BLEND_ALPHA_SDL2)
-                    sprite.set_alpha(255)
-
-                    self.cat_buttons.append(
-                        UISpriteButton(
-                            ui_scale(
-                                pygame.Rect(tuple(Cat.all_cats[x].placement), (50, 50))
-                            ),
-                            sprite,
-                            cat_id=x,
-                            starting_height=i,
+            try:
+                image = Cat.all_cats[x].sprite.convert_alpha()
+                blend_layer = (
+                    self.game_bgs[self.active_bg]
+                    .subsurface(
+                        ui_scale(
+                            pygame.Rect(tuple(Cat.all_cats[x].placement), (50, 50))
                         )
                     )
-                except Exception as e:
-                    print(
-                        f"ERROR: placing {Cat.all_cats[x].name}'s sprite on Clan page"
+                    .convert_alpha()
+                )
+                blend_layer = pygame.transform.box_blur(
+                    blend_layer, self.layout["cat_shading"]["blur"]
+                )
+
+                sprite = image.copy()
+                sprite.fill(
+                    (255, 255, 255, 255), special_flags=pygame.BLEND_RGB_MAX
+                )
+                sprite.blit(
+                    blend_layer, (0, 0), special_flags=pygame.BLEND_RGBA_MULT
+                )
+                image.set_alpha(self.layout["cat_shading"]["blend_strength"])
+                sprite.blit(image, (0, 0), special_flags=pygame.BLEND_ALPHA_SDL2)
+                sprite.set_alpha(255)
+
+                self.cat_buttons.append(
+                    UISpriteButton(
+                        ui_scale(
+                            pygame.Rect(tuple(Cat.all_cats[x].placement), (50, 50))
+                        ),
+                        sprite,
+                        cat_id=x,
+                        starting_height=i,
                     )
-                    print(e)
+                )
+            except Exception as e:
+                print(
+                    f"ERROR: placing {Cat.all_cats[x].name}'s sprite on Clan page"
+                )
+                print(e)
 
         # Den Labels
         # Redo the locations, so that it uses layout on the Clan page
@@ -322,6 +339,9 @@ class ClanScreen(Screens):
         game.switches["saved_clan"] = False
 
     def update_camp_bg(self):
+
+        your_location = Cat.get_cat_location(game.clan.your_cat)
+
         light_dark = "dark" if game.settings["dark mode"] else "light"
 
         camp_bg_base_dir = "resources/images/camp_bg/"
@@ -341,9 +361,15 @@ class ClanScreen(Screens):
 
         all_backgrounds = []
         for leaf in leaves:
-            platform_dir = (
-                f"{camp_bg_base_dir}/{biome}/{leaf}_{camp_nr}_{light_dark}.png"
-            )
+            if your_location == "clan":
+                platform_dir = (
+                    f"{camp_bg_base_dir}/{biome}/{leaf}_{camp_nr}_{light_dark}.png"
+                )
+            else:
+                platform_dir = (
+                    f"{camp_bg_base_dir}/plains/{leaf}_camp9_{light_dark}.png"
+                )
+
             all_backgrounds.append(platform_dir)
 
         self.add_bgs(
