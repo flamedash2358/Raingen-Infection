@@ -5,28 +5,28 @@
     "partial_cure": "Even if it's not a full cure, it seems that some herbs are able to temporarily reverse the infection's progression.",
     "herb_death": "The infection has begun killing off herbs in the territory at an alarming rate.",
     "prey_death": "Prey has started being affected by the infection. Hunting patrols avoid the sick prey and come home with less food each day.",
-    "inherited_infection": "The infection can be passed down from parent to kit.",
-    "inherited_immunity": "A kit with an immune parent may be born immune to the infection!",
+    "inherited_infection": "The infection can be passed down from parent to pup.",
+    "inherited_immunity": "A pup with an immune parent may be born immune to the infection!",
 
     "lore_spread_by_air": "The infection is airborne.",
     "lore_spread_by_bite": "One becomes infected when bitten by an infected creature.",
-    "lore_no_reinfection": "Cats who have been infected and cured are unable to become infected again.",
-    "lore_undead": "When a cat dies of the infection, the disease continues to control their body.",
-    "lore_premature_death": "An infected cat who is killed before the infection reaches maturity will not come back.",
+    "lore_no_reinfection": "Slugcats who have been infected and cured are unable to become infected again.",
+    "lore_undead": "When a slugcat dies of the infection, the disease continues to control their body.",
+    "lore_premature_death": "An infected slugcat who is killed before the infection reaches maturity will not come back.",
 
     "lore_fungal_1": "The disease appears to be fungal in nature.",
-    "lore_fungal_2": "Twolegs may have found a cure.",
-    "lore_fungal_3": "Cats who recieve care from Twolegs become immune to the infection.",
+    "lore_fungal_2": "Iterators may have found a cure.",
+    "lore_fungal_3": "Slugcats who recieve help from Iterators become immune to the infection.",
 
-    "lore_void_1": "The infection seems to be... supernatural, in origin.",
+    "lore_void_1": "The infection seems to be Voidish in origin.",
     "lore_void_2": "Victims are very prone to violence. Proceed with caution.",
-    "lore_void_3": "Upon death, the victim's body simply vanishes.",
-    "lore_void_4": "Twolegs have gone missing.",
+    "lore_void_3": "Upon death, the victim appears to become an echo.",
+    "lore_void_4": "Some local Iterators have abruptly ceased functioning.",
 
-    "lore_parasitic_1": "The infection seems to be caused by some sort of parasite.",
+    "lore_parasitic_1": "The infection seems to be caused by some sort of rot.",
     "lore_parasitic_2": "While the body slowly dies, the brain stays active.",
-    "lore_parasitic_3": "Twolegs are also being infected.",
-    "lore_parasitic_4": "Twolegs have been seen killing their infected.",
+    "lore_parasitic_3": "Iterators are also being infected.",
+    "lore_parasitic_4": "Iterators have been seen dumping mass amounts of rotted material.",
 
-    "zombie": "When a very infected cat dies, the disease takes over their body."
+    "zombie": "When a very infected slugcat dies, the disease takes over their body."
 }
